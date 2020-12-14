@@ -20,7 +20,7 @@
  * **Note:** Padding is preserved, the output is set on the text at the same
  * indentation level that the respective `<deno>` tag is written at.
  */
-async function denoTag(text: string, options?: DenoTagOptions) {
+export async function denoTag(text: string, options?: DenoTagOptions) {
   // Parsing the deno tags is about reading the text string, looking for
   // `<deno>` tags, and process their attributes and values.
   // This `parseDenoTag` function returns the attributes of each deno tag as
@@ -62,7 +62,6 @@ interface DenoTagOptions {
   runner?: typeof Deno.run;
   runOptions?: Deno.RunOptions;
 }
-export { denoTag };
 export type { DenoTagOptions };
 
 /**

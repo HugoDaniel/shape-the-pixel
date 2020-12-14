@@ -1,4 +1,4 @@
-import { denoTag } from "./deno-tag.ts";
+import { denoTag } from "./deno_tag.ts";
 
 /**
  * Prints the command line help text.
