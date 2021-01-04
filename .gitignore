@@ -17,7 +17,6 @@ yarn-error.log
 .parallelperf.*
 *.map
 *.jsx
-*.js
 *.code-workspace
 *.zip
 *.tar.gz
@@ -33,6 +32,7 @@ deploy.sh
 prod.sh
 decls/
 tmp/
+old/
 video/
 TODO
 .env
