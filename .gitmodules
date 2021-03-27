@@ -1,0 +1,3 @@
+[submodule "dependencies/yjs"]
+	path = dependencies/yjs
+	url = git@github.com:yjs/yjs.git
