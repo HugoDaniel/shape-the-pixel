@@ -3,6 +3,12 @@ build/index.html: web/index.html
 	cp web/index.css $(dir $@)
 	deno run --allow-read --allow-run --unstable https://deno.land/x/deno_tag/deno_tag.ts $< > $@
 
+init:
+	git submodule init
+	git submodule update
+	cd dependencies/yjs/ && npm i
+	cd dependencies/yjs/ && npm run dist
+
 clean:
 	rm -rf build
 
