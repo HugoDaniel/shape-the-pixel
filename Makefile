@@ -1,7 +1,7 @@
 build/index.html: web/index.html
 	mkdir -p $(dir $@)
 	cp web/index.css $(dir $@)
-	deno run --allow-read --allow-run --unstable modules/deno_tag/cli.ts $< > $@
+	deno run --allow-read --allow-run --unstable https://deno.land/x/deno_tag/deno_tag.ts $< > $@
 
 clean:
 	rm -rf build

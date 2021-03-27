@@ -1,2 +1,11 @@
-# shape-the-pixel
-A simple drawing tool
+# Shape The Pixel
+
+A simple drawing tool.
+
+## Structure
+
+```
+/web
+/modules
+Makefile
+```
