@@ -1,6 +1,7 @@
 build/index.html: code/webapp/index.html
 	mkdir -p $(dir $@)
-	cp code/webapp/css/* $(dir $@)
+	mkdir -p $(dir $@)css
+	cp code/webapp/css/* $(dir $@)css
 	deno run --allow-read --allow-run --unstable https://deno.land/x/deno_tag@v1.1.0/deno_tag.ts $< > $@
 
 init:
