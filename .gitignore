@@ -15,7 +15,6 @@ build.json
 yarn.lock
 yarn-error.log
 .parallelperf.*
-*.map
 *.jsx
 *.code-workspace
 *.zip
