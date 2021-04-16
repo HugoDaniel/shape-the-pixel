@@ -1,0 +1,69 @@
+:root {
+  --neper: 2.718281828459045;
+  --pi: 3.141592653589793;
+  --global-size-0: 1px;
+  --global-size-1: 2px;
+  --global-size-2: 4px;
+  --global-size-3: 8px;
+  --global-size-4: 16px;
+  --global-size-5: 32px;
+  --global-size-6: 64px;
+  --global-size-7: 128px;
+  --global-color-white: #fffffa;
+  --global-color-dark: #001b44;
+  --global-color-main: #d32a2a;
+}
+html,
+body {
+  font-family: "avenir next", avenir, sans-serif;
+  text-transform: uppercase;
+  overflow: hidden;
+  /* by default do not allow selection of text on this app */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* use a white background */
+  background: var(--global-color-white);
+  /* no padding or margin on this page */
+  padding: 0;
+  margin: 0;
+  color: var(--global-color-navy);
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+canvas {
+  -webkit-tap-highlight-color: transparent;
+}
+a {
+  text-transform: none;
+}
+button {
+  cursor: pointer;
+  border: none;
+  margin: 0;
+  padding: 0;
+  width: auto;
+  overflow: visible;
+  background: transparent;
+  /* inherit font & color from ancestor */
+  color: inherit;
+  font: inherit;
+  /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
+  line-height: normal;
+  /* Corrects font smoothing for webkit */
+  -webkit-font-smoothing: inherit;
+  -moz-osx-font-smoothing: inherit;
+  /* Corrects inability to style clickable `input` types in iOS */
+  -webkit-appearance: none;
+}
+button:focus {
+  outline: 0;
+}
+
+main {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
