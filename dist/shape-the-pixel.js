@@ -1,6 +1,28 @@
-parcelRequire=function(e,r,t,n){var i,o="function"==typeof parcelRequire&&parcelRequire,u="function"==typeof require&&require;function f(t,n){if(!r[t]){if(!e[t]){var i="function"==typeof parcelRequire&&parcelRequire;if(!n&&i)return i(t,!0);if(o)return o(t,!0);if(u&&"string"==typeof t)return u(t);var c=new Error("Cannot find module '"+t+"'");throw c.code="MODULE_NOT_FOUND",c}p.resolve=function(r){return e[t][1][r]||r},p.cache={};var l=r[t]=new f.Module(t);e[t][0].call(l.exports,p,l,l.exports,this)}return r[t].exports;function p(e){return f(p.resolve(e))}}f.isParcelRequire=!0,f.Module=function(e){this.id=e,this.bundle=f,this.exports={}},f.modules=e,f.cache=r,f.parent=o,f.register=function(r,t){e[r]=[function(e,r){r.exports=t},{}]};for(var c=0;c<t.length;c++)try{f(t[c])}catch(e){i||(i=e)}if(t.length){var l=f(t[t.length-1]);"object"==typeof exports&&"undefined"!=typeof module?module.exports=l:"function"==typeof define&&define.amd?define(function(){return l}):n&&(this[n]=l)}if(parcelRequire=f,i)throw i;return f}({"CjMq":[function(require,module,exports) {
-"use strict";function e(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}Object.defineProperty(exports,"__esModule",{value:!0}),exports.ViewState=void 0;var t=function t(){e(this,t)};exports.ViewState=t;
-},{}],"n7E5":[function(require,module,exports) {
-"use strict";var e=require("./state/view-state.js");window.onload=function(){console.log("READY")};
-},{"./state/view-state.js":"CjMq"}]},{},["n7E5"], null)
-//# sourceMappingURL=/shape-the-pixel.js.map
+// Copyright © 2021 by Hugo Daniel Henriques Oliveira Gomes. All rights reserved.
+// Licensed under the EUPL v1.2
+import { ViewState } from "./state/view-state.js"
+import { Render } from "./render/render.js"
+
+window.onload = () => {
+	if (window.location.hash) {
+		console.log(
+			"Found an hash",
+			window.location.hash,
+			"connecting to WebRTC"
+		)
+	}
+	const bounds = {
+		w: window.innerWidth,
+		h: window.innerHeight,
+		dpr: window.devicePixelRatio,
+	}
+	// const viewState = new ViewState(window.innerWidth, window.innerHeight)
+	// const view = new View()
+	const viewState = new ViewState(bounds)
+
+	viewState.initIndexedDB()
+	window.location.hash = viewState.docId
+
+	const renderer = new Render()
+	renderer.start()
+}
