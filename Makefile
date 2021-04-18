@@ -14,7 +14,10 @@ dist/dependencies/shader_canvas.js:
 	cp code/webapp/dependencies/shader_canvas.js dist/dependencies
 dist/dependencies.js:
 	parcel build code/webapp/dependencies.js
-dist/index.html: dist/state dist/shape-the-pixel.js dist/dependencies.js dist/shape-the-pixel.css dist/favicon.ico dist/dependencies/bundle.js dist/dependencies/shader_canvas.js
+dist/render:
+	mkdir -p dist/render
+	cp code/webapp/render/* dist/render
+dist/index.html: dist/render dist/state dist/shape-the-pixel.js dist/dependencies.js dist/shape-the-pixel.css dist/favicon.ico dist/dependencies/bundle.js dist/dependencies/shader_canvas.js
 	cp code/webapp/index.html dist
 serve:
 	parcel serve code/webapp/index.html
