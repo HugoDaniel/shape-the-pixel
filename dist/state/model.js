@@ -1,7 +1,6 @@
 // Copyright © 2021 by Hugo Daniel Henriques Oliveira Gomes. All rights reserved.
 // Licensed under the EUPL v1.2
-import cuid from "cuid"
-const { Y } = External
+const { Y, cuid } = External
 
 /**
  * Model holds all the documents available and keeps track of the list of
