@@ -347,6 +347,7 @@ export class PanZoom2D {
 				this.zoom =
 					this.gestureStartZoom *
 					(this.zoomCurrentDist / this.zoomStartDist)
+				this.zoomSign = Math.sign(this.oldZoom - this.zoom)
 
 				this.mouseX =
 					(this.ongoingTouches[0].x + this.ongoingTouches[1].x) / 2
@@ -363,14 +364,12 @@ export class PanZoom2D {
 					(this.ongoingTouches[0].x -
 						this.startX -
 						this.gestureOldPanX) *
-					this.zoom *
-					2
+					this.zoom
 				this.panY +=
 					(this.ongoingTouches[0].y -
 						this.startY -
 						this.gestureOldPanY) *
-					this.zoom *
-					2
+					this.zoom
 				this.gestureOldPanX = this.ongoingTouches[0].x - this.startX
 				this.gestureOldPanY = this.ongoingTouches[0].y - this.startY
 				console.log(e)
