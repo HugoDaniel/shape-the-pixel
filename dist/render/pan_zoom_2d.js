@@ -280,8 +280,8 @@ export class PanZoom2D {
 	copyTouch(touch) {
 		return {
 			identifier: touch.pointerId,
-			pageX: touch.clientX,
-			pageY: touch.clientY,
+			x: touch.clientX,
+			y: touch.clientY,
 		}
 	}
 	ongoingTouchIndexById = idToFind => {
@@ -332,12 +332,16 @@ export class PanZoom2D {
 			if (this.ongoingTouches.length > 1) {
 				// Zoom
 				console.log("ZOOM")
+				this.ongoingTouches[index].x = e.clientX
+				this.ongoingTouches[index].y = e.clientY
 				this.zoomCurrentDist = Math.hypot(
 					this.ongoingTouches[0].x - this.ongoingTouches[1].x,
 					this.ongoingTouches[0].y - this.ongoingTouches[1].y
 				)
 				this.debugMsg(
-					`ZOOM: ${this.zoomCurrentDist / this.zoomStartDist}`
+					`ZOOM: ${this.zoomCurrentDist / this.zoomStartDist}, ${
+						this.zoomCurrentDist
+					}, ${this.zoomStartDist}`
 				)
 			} else {
 				// Pan
