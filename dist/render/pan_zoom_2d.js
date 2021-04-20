@@ -170,6 +170,8 @@ export class PanZoom2D {
 	startX = 0
 	/** The initial Y movement done by a gesture (set with gesture* events) */
 	startY = 0
+	gestureOldPanX = this.panX
+	gestureOldPanY = this.panY
 
 	/** Mouse pointer X position, useful to zoom in/out at the mouse location */
 	mouseX = -1
@@ -306,7 +308,6 @@ export class PanZoom2D {
 	zoomStartDist = 0
 	zoomCurrentDist = 0
 	handlePointerStart = e => {
-		console.log("Pointer start", e)
 		this.ongoingTouches.push(this.copyTouch(e))
 		if (this.ongoingTouches.length >= 2) {
 			this.zoomStartDist = Math.hypot(
@@ -318,8 +319,11 @@ export class PanZoom2D {
 				`ZOOM START ${this.zoomStartDist} - points: ${this.ongoingTouches.length}`
 			)
 		} else {
+			console.log("PAN STARTING", this.ongoingTouches.length)
 			this.startX = this.ongoingTouches[0].x
 			this.startY = this.ongoingTouches[0].y
+			this.gestureOldPanX = 0
+			this.gestureOldPanY = 0
 		}
 	}
 	handlePointerUp = e => {
@@ -329,7 +333,6 @@ export class PanZoom2D {
 		this.handleEnd(e)
 	}
 	handlePointerMove = e => {
-		console.log("Pointer moves", e)
 		var index = this.ongoingTouchIndexById(e.pointerId)
 		if (index >= 0) {
 			// Found
@@ -354,12 +357,26 @@ export class PanZoom2D {
 				)
 			} else {
 				// Pan
-				console.log("PAN")
 				this.ongoingTouches[0].x = e.clientX
 				this.ongoingTouches[0].y = e.clientY
-				this.panX = this.ongoingTouches[0].x - this.startX
-				this.panY = this.ongoingTouches[0].y - this.startY
-				this.debugMsg(`PAN (${this.panX}, ${this.panY})`)
+				this.panX +=
+					(this.ongoingTouches[0].x -
+						this.startX -
+						this.gestureOldPanX) *
+					this.zoom *
+					2
+				this.panY +=
+					(this.ongoingTouches[0].y -
+						this.startY -
+						this.gestureOldPanY) *
+					this.zoom *
+					2
+				this.gestureOldPanX = this.ongoingTouches[0].x - this.startX
+				this.gestureOldPanY = this.ongoingTouches[0].y - this.startY
+				console.log(e)
+				this.debugMsg(
+					`PAN (${this.panX}, ${this.panY}, ${this.gestureOldPanX}, ${this.gestureOldPanY})`
+				)
 			}
 		} else {
 			this.debugMsg("NOTHING")
