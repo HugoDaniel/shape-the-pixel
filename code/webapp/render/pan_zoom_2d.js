@@ -316,6 +316,9 @@ export class PanZoom2D {
 			this.debugMsg(
 				`ZOOM START ${this.zoomStartDist} - points: ${this.ongoingTouches.length}`
 			)
+		} else {
+			this.startX = this.ongoingTouches[0].x
+			this.startY = this.ongoingTouches[0].y
 		}
 	}
 	handlePointerUp = e => {
@@ -331,7 +334,6 @@ export class PanZoom2D {
 			// Found
 			if (this.ongoingTouches.length > 1) {
 				// Zoom
-				console.log("ZOOM")
 				this.ongoingTouches[index].x = e.clientX
 				this.ongoingTouches[index].y = e.clientY
 				this.zoomCurrentDist = Math.hypot(
@@ -339,24 +341,6 @@ export class PanZoom2D {
 					this.ongoingTouches[0].y - this.ongoingTouches[1].y
 				)
 				this.zoom = this.zoomCurrentDist / this.zoomStartDist
-				/*
-				const len1 = Math.hypot(
-					this.ongoingTouches[0].x,
-					this.ongoingTouches[0].y
-				)
-				const len2 = Math.hypot(
-					this.ongoingTouches[1].x,
-					this.ongoingTouches[1].y
-				)
-				const m =
-					(this.ongoingTouches[0].x - this.ongoingTouches[1].x) /
-					(this.ongoingTouches[0].y - this.ongoingTouches[1].y)
-				const sign = Math.sign(m) * (len1 < len2 ? -1 : 1)
-				const centerX =
-					this.ongoingTouches[0].x + sign * 0.5 * this.zoomCurrentDist
-				const centerY =
-					this.ongoingTouches[0].y + sign * 0.5 * this.zoomCurrentDist
-					*/
 
 				const centerX =
 					(this.ongoingTouches[0].x + this.ongoingTouches[1].x) / 2
@@ -366,7 +350,11 @@ export class PanZoom2D {
 			} else {
 				// Pan
 				console.log("PAN")
-				this.debugMsg("PAN")
+				this.ongoingTouches[0].x = e.clientX
+				this.ongoingTouches[0].y = e.clientY
+				this.panX = this.ongoingTouches[0].x - this.startX
+				this.panY = this.ongoingTouches[0].y - this.startY
+				this.debugMsg(`PAN (${this.panX}, ${this.panY})`)
 			}
 		} else {
 			this.debugMsg("NOTHING")
