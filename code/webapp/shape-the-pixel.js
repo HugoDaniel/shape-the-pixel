@@ -4,6 +4,7 @@ import { ViewState } from "./state/view-state.js"
 import { Render } from "./render/render.js"
 
 window.onload = () => {
+	const { interact } = External
 	if (window.location.hash) {
 		console.log(
 			"Found an hash",
@@ -23,6 +24,6 @@ window.onload = () => {
 	viewState.initIndexedDB()
 	window.location.hash = viewState.docId
 
-	const renderer = new Render()
+	const renderer = new Render(interact)
 	renderer.start()
 }

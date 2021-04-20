@@ -19,10 +19,9 @@ body {
   text-transform: uppercase;
   overflow: hidden;
   /* by default do not allow selection of text on this app */
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
+  /* don't pan when dragging with a touch pointer */
+  touch-action: none;
   /* use a white background */
   background: var(--global-color-white);
   /* no padding or margin on this page */
@@ -33,6 +32,7 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
 canvas {
   -webkit-tap-highlight-color: transparent;
 }

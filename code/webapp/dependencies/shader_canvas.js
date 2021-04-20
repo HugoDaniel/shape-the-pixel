@@ -469,7 +469,6 @@ class DrawVAO extends globalThis.HTMLElement {
         const instances = this.instanceCount;
         if (this.vao.hasElementArrayBuffer) {
             if (instances > 0) {
-                console.log("ELEMENTS WITH INSTANCES", instances, count);
                 this.drawVao = ()=>{
                     bindVao();
                     gl.drawElementsInstanced(mode, count, type, offset, instances);
@@ -482,13 +481,11 @@ class DrawVAO extends globalThis.HTMLElement {
             }
         } else {
             if (instances > 0) {
-                console.log("ARRAYS WITH INSTANCES", instances, count);
                 this.drawVao = ()=>{
                     bindVao();
                     gl.drawArraysInstanced(mode, first, count, instances);
                 };
             } else {
-                console.log("WITHOUT INSTANCES");
                 this.drawVao = ()=>{
                     bindVao();
                     gl.drawArrays(mode, first, count);
@@ -1126,7 +1123,6 @@ class DrawLoop1 extends DrawCallsContainer {
     ;
     async initialize(gl, context, renderers, updaters) {
         await this.whenLoaded;
-        console.log("DRAW LOOP RENDERERS", renderers);
         await this.buildDrawFunction(gl, context, renderers, updaters);
         for (const functions of context.modulesFunctions.values()){
             if (functions.onFrame && typeof functions.onFrame === "function") {
@@ -2201,12 +2197,10 @@ class BufferData extends globalThis.HTMLElement {
                     bytesPerItem = this.data.BYTES_PER_ELEMENT;
                 }
                 this.length = Math.floor(this.data.byteLength / bytesPerItem);
-                console.log("CREATED BUFFER", this.parentElement?.tagName, this.length, bytesPerItem);
                 if (this.offset > 0 && isArrayBufferView(this.data)) {
                     gl.bufferData(target, this.data, usage, this.offset);
                     this.length = this.length - this.offset;
                 } else {
-                    console.log("UPLOADING DATA ARRAY");
                     gl.bufferData(target, this.data, usage);
                 }
             } else {
@@ -3272,7 +3266,6 @@ class WebGLCanvas extends globalThis.HTMLElement {
         const f = flags || {
             desynchronized: true
         };
-        console.log("FLAGS", f, flags);
         const ctx = this.canvas.getContext("webgl2", f);
         if (!ctx || typeof ctx.getContextAttributes !== "function" || !(ctx instanceof WebGL2RenderingContext)) {
             throw new Error("No WebGL 2.0 support");
@@ -3312,7 +3305,6 @@ class ImportModule extends globalThis.HTMLElement {
             try {
                 const response = await fetch(this.from);
                 const result = await response.text();
-                console.log("GOT RESULT", result);
                 return result;
             } catch (e) {
                 console.error(e);

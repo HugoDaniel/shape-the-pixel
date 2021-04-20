@@ -60,7 +60,7 @@ export class PanZoomState {
 						if (!this._isUpdating) {
 							this.onActionEnd()
 						}
-					}, 100)
+					}, 60)
 				}
 			}
 		}
@@ -196,6 +196,11 @@ export class PanZoom2D {
 	 **/
 	isListeningToEvents = false
 
+	constructor(interact, isMobile) {
+		this.interact = interact
+		this.isMobile = isMobile
+	}
+
 	/**
 	 * Resets all variables to their initial values.
 	 *
@@ -237,15 +242,90 @@ export class PanZoom2D {
 			console.warn("Trying to start already started event listeners")
 			return
 		}
-		addEventListener("wheel", this.wheelHandler, {
-			passive: false,
-			capture: false,
-		})
-		addEventListener("gesturestart", this.gestureStartHandler)
-		addEventListener("gesturechange", this.gestureChangeHandler)
-		addEventListener("gestureend", this.gestureEndHandler)
+		const el = document.body
+		this.startDebug()
+
+		if (true) {
+			// pointer events
+			el.addEventListener("pointerdown", this.handlePointerStart, false);
+			el.addEventListener("pointerup", this.handlePointerUp, false);
+			el.addEventListener("pointercancel", this.handlePointerCancel, false);
+			el.addEventListener("pointermove", this.handlePointerMove, false);
+		} else {
+			el.addEventListener("wheel", this.wheelHandler, {
+				passive: false,
+				capture: false,
+			})
+			el.addEventListener("gesturestart", this.gestureStartHandler)
+			el.addEventListener("gesturechange", this.gestureChangeHandler)
+			el.addEventListener("gestureend", this.gestureEndHandler)
+		}
 		this.isListeningToEvents = true
 	}
+	startDebug = () => {
+		const p = document.createElement("p")
+		p.id = "debug"
+		p.innerText = p.innerText + "DEBUG: "
+		document.body.prepend(p)
+	}
+	debugMsg = (msg) => {
+		const p = document.getElementById("debug")
+		p.innerText = `Debug: ${msg}`
+	}
+	ongoingTouches = new Array()
+	copyTouch(touch) {
+		return { identifier: touch.pointerId, pageX: touch.clientX, pageY: touch.clientY };
+	}
+	ongoingTouchIndexById = (idToFind) => {
+		for (var i = 0; i < this.ongoingTouches.length; i++) {
+			var id = this.ongoingTouches[i].identifier;
+		
+			if (id == idToFind) {
+			return i;
+			}
+		}
+		return -1; // not found
+	}
+	handleEnd = (e) => {
+		var index = this.ongoingTouchIndexById(e.pointerId);
+	  
+		if (index >= 0) {
+		  this.ongoingTouches.splice(index, 1);  // remove it; we're done
+		} else {
+		  console.log("can't figure out which touch to end");
+		}
+	  }
+	handlePointerStart = (e) => {
+		console.log('Pointer start', e)
+		this.ongoingTouches.push(this.copyTouch(e))
+	}
+	handlePointerUp = (e) => {
+		console.log('Pointer up', e)
+		this.handleEnd(e)
+	}
+	handlePointerCancel = (e) => {
+		console.log('Pointer cancel', e)
+		this.handleEnd(e)
+	}
+	handlePointerMove = (e) => {
+		console.log('Pointer move', e)
+		var index = this.ongoingTouchIndexById(e.pointerId);
+		if (index >= 0) {
+			// Found
+			if (this.ongoingTouches.length > 1) {
+				// Zoom
+				console.log('ZOOM')
+				this.debugMsg('ZOOM')
+			} else {
+				// Pan
+				console.log('PAN')
+				this.debugMsg('PAN')
+			}
+		} else {
+			this.debugMsg('NOTHING')
+		}
+	}
+	  
 	/**
 	 * Removes all event listener functions (if they have been registered).
 	 *
@@ -260,10 +340,13 @@ export class PanZoom2D {
 			console.warn("Trying to stop already stopped event listeners.")
 			return
 		}
-		removeEventListener("wheel", this.wheelHandler)
-		removeEventListener("gesturestart", this.gestureStartHandler)
-		removeEventListener("gesturechange", this.gestureChangeHandler)
-		removeEventListener("gestureend", this.gestureEndHandler)
+		if (this.isMobile) {
+		} else {
+			removeEventListener("wheel", this.wheelHandler)
+			removeEventListener("gesturestart", this.gestureStartHandler)
+			removeEventListener("gesturechange", this.gestureChangeHandler)
+			removeEventListener("gestureend", this.gestureEndHandler)
+		}
 		this.isListeningToEvents = false
 	}
 
@@ -381,7 +464,7 @@ export class PanZoom2D {
 	 * calculated if there are no gesture* events available.
 	 **/
 	wheelHandler = e => {
-		e.preventDefault()
+		console.log("WHEEL")
 		e.stopPropagation()
 		// Zoom can happen when the ctrl key is set
 		if (e.ctrlKey) {

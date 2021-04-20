@@ -20,7 +20,7 @@ export class RenderGrid {
 	 * In pixels - minimum size possible of a grid cell when zoomed out
 	 * completely.
 	 */
-	size = 12
+	size = 4
 
 	/**
 	 * The size (in pixels), adjusted to the current device pixel ratio
@@ -126,13 +126,14 @@ export class RenderGrid {
 		this.appendDrawLoop()
 		this.initializeBuffers(gridFillIds)
 		this.initializeProgram(w, h, dpr)
-
+		/*
 		globalThis.document.addEventListener("pointerdown", e => {
 			this.needsSceneUpdate = true
 			if (this.hoverX && this.hoverY) {
 				appState.setXY(this.hoverX, this.hoverY, 3)
 			}
 		})
+*/
 	}
 
 	appendDrawLoop() {
@@ -311,10 +312,10 @@ export class RenderGrid {
 			}
 
 			const view = new DataView(this.readData.buffer)
+			/*
 			globalThis.document.addEventListener(
 				"pointermove",
 				e => {
-					e.preventDefault()
 					const mouseX = Math.floor(e.offsetX * dpr)
 					const mouseY = h - Math.floor(e.offsetY * dpr)
 					const bytesPerItem = 4 // Its a Uint32 array
@@ -328,6 +329,7 @@ export class RenderGrid {
 				},
 				{ passive: false }
 			)
+      */
 
 			return () => {
 				if (
@@ -355,7 +357,6 @@ export class RenderGrid {
         <draw-buffers buffers=["COLOR_ATTACHMENT0","COLOR_ATTACHMENT1"]></draw-buffers>
         <viewport-transform x="0" y="0"></viewport-transform>
         <depth-func func="LEQUAL"></depth-func>
-        <clear-flags mask="COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT"></clear-flags>
         <use-program src="infinite-grid">
             <uniform-1fv var="isLines" value="0"></uniform-1fv>
             <draw-vao instanceCount=${instanceNumber} src="quad-vao" mode="TRIANGLE_FAN" count="4" type="UNSIGNED_SHORT">
