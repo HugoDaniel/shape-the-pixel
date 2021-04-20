@@ -339,13 +339,22 @@ export class PanZoom2D {
 					this.ongoingTouches[0].y - this.ongoingTouches[1].y
 				)
 				this.zoom = this.zoomCurrentDist / this.zoomStartDist
+				const len1 = Math.hypot(
+					this.ongoingTouches[0].x,
+					this.ongoingTouches[0].y
+				)
+				const len2 = Math.hypot(
+					this.ongoingTouches[1].x,
+					this.ongoingTouches[1].y
+				)
 				const m =
 					(this.ongoingTouches[0].x - this.ongoingTouches[1].x) /
 					(this.ongoingTouches[0].y - this.ongoingTouches[1].y)
+				const sign = Math.sign(m) * (len1 < len2 ? -1 : 1)
 				const centerX =
-					this.ongoingTouches[0].x + 0.5 * this.zoomCurrentDist
+					this.ongoingTouches[0].x + sign * 0.5 * this.zoomCurrentDist
 				const centerY =
-					this.ongoingTouches[0].y + 0.5 * this.zoomCurrentDist
+					this.ongoingTouches[0].y + sign * 0.5 * this.zoomCurrentDist
 				this.debugMsg(
 					`ZOOM: ${this.zoom}, m:${m}, c(${centerX}, ${centerY}`
 				)
