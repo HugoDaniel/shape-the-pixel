@@ -254,7 +254,7 @@ export class PanZoom2D {
 		const el = document.body
 		this.startDebug()
 
-		if (true) {
+		if (this.isMobile) {
 			// pointer events
 			el.addEventListener("pointerdown", this.handlePointerStart, false)
 			el.addEventListener("pointerup", this.handlePointerUp, false)
@@ -326,7 +326,7 @@ export class PanZoom2D {
 				Math.hypot(
 					this.ongoingTouches[0].x - this.ongoingTouches[1].x,
 					this.ongoingTouches[0].y - this.ongoingTouches[1].y
-				) / 4
+				) / 8
 			this.gestureStartZoom = this.zoom
 			this.pointerAction = "ZOOM"
 			this.debugMsg(
@@ -361,7 +361,7 @@ export class PanZoom2D {
 					Math.hypot(
 						this.ongoingTouches[0].x - this.ongoingTouches[1].x,
 						this.ongoingTouches[0].y - this.ongoingTouches[1].y
-					) / 4
+					) / 8
 				this.zoom =
 					this.gestureStartZoom *
 					(this.zoomCurrentDist / this.zoomStartDist)
@@ -494,14 +494,15 @@ export class PanZoom2D {
 					) {
 						const transform = this.zoomT
 
+						let factor = Math.PI / Math.exp(this.zoom)
+						if (this.isMobile) {
+							factor =
+								this.zoom > 4.2
+									? Math.pow(this.zoom, Math.log(this.zoom)) /
+									  Math.exp(this.zoom)
+									: 1 / Math.log(this.zoom)
+						}
 						// Apply the translation affine transformation matrix
-						// let factor = 3 / this.zoom / Math.log(this.zoom) // Math.PI / Math.exp(this.zoom)
-						let factor =
-							this.zoom > 5
-								? Math.pow(this.zoom, Math.log(this.zoom)) /
-								  Math.exp(this.zoom)
-								: 1 / Math.log(this.zoom) // Math.PI / Math.exp(this.zoom)
-						console.log(Math.log(this.zoom), Math.exp(this.zoom))
 						const deltaX = (this.panX - this.oldPanX) * factor
 						const deltaY = (this.panY - this.oldPanY) * factor
 						translate(transform, [deltaX, deltaY, 0], transform)
