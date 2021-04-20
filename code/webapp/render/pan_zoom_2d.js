@@ -1,6 +1,13 @@
 import { ShaderCanvas } from "../dependencies/shader_canvas.js"
 import { Matrix } from "../dependencies/bundle.js"
-const { transformPoint, identityMatrix, translate, scale, multiply } = Matrix
+const {
+	inverse,
+	transformPoint,
+	identityMatrix,
+	translate,
+	scale,
+	multiply,
+} = Matrix
 /**
  * The state to be passed outside of this module. This is useful to allow
  * other components to read the pan/zoom values, and also to trigger actions
@@ -304,17 +311,24 @@ export class PanZoom2D {
 		} else {
 			console.log("can't figure out which touch to end")
 		}
+
+		if (this.ongoingTouches.length === 0) {
+			this.pointerAction = "NONE"
+		}
 	}
 	zoomStartDist = 0
 	zoomCurrentDist = 0
+	pointerAction = "NONE"
 	handlePointerStart = e => {
 		this.ongoingTouches.push(this.copyTouch(e))
 		if (this.ongoingTouches.length >= 2) {
-			this.zoomStartDist = Math.hypot(
-				this.ongoingTouches[0].x - this.ongoingTouches[1].x,
-				this.ongoingTouches[0].y - this.ongoingTouches[1].y
-			)
+			this.zoomStartDist =
+				Math.hypot(
+					this.ongoingTouches[0].x - this.ongoingTouches[1].x,
+					this.ongoingTouches[0].y - this.ongoingTouches[1].y
+				) / 4
 			this.gestureStartZoom = this.zoom
+			this.pointerAction = "ZOOM"
 			this.debugMsg(
 				`ZOOM START ${this.zoomStartDist} - points: ${this.ongoingTouches.length}`
 			)
@@ -322,8 +336,11 @@ export class PanZoom2D {
 			console.log("PAN STARTING", this.ongoingTouches.length)
 			this.startX = this.ongoingTouches[0].x
 			this.startY = this.ongoingTouches[0].y
+			this.startPanX = this.panX
+			this.startPanY = this.panY
 			this.gestureOldPanX = 0
 			this.gestureOldPanY = 0
+			this.pointerAction = "PAN"
 		}
 	}
 	handlePointerUp = e => {
@@ -336,14 +353,15 @@ export class PanZoom2D {
 		var index = this.ongoingTouchIndexById(e.pointerId)
 		if (index >= 0) {
 			// Found
-			if (this.ongoingTouches.length > 1) {
+			if (this.pointerAction === "ZOOM") {
 				// Zoom
 				this.ongoingTouches[index].x = e.clientX
 				this.ongoingTouches[index].y = e.clientY
-				this.zoomCurrentDist = Math.hypot(
-					this.ongoingTouches[0].x - this.ongoingTouches[1].x,
-					this.ongoingTouches[0].y - this.ongoingTouches[1].y
-				)
+				this.zoomCurrentDist =
+					Math.hypot(
+						this.ongoingTouches[0].x - this.ongoingTouches[1].x,
+						this.ongoingTouches[0].y - this.ongoingTouches[1].y
+					) / 4
 				this.zoom =
 					this.gestureStartZoom *
 					(this.zoomCurrentDist / this.zoomStartDist)
@@ -356,20 +374,17 @@ export class PanZoom2D {
 				this.debugMsg(
 					`ZOOM: ${this.zoom}, c(${this.mouseX}, ${this.mouseY}`
 				)
-			} else {
+			} else if (this.pointerAction === "PAN") {
 				// Pan
+				const panX = this.ongoingTouches[0].x - this.startX
+				const panY = this.ongoingTouches[0].y - this.startY
+				const panXAdjustment = panX - this.gestureOldPanX
+				const panYAdjustment = panY - this.gestureOldPanY
+
 				this.ongoingTouches[0].x = e.clientX
 				this.ongoingTouches[0].y = e.clientY
-				this.panX +=
-					(this.ongoingTouches[0].x -
-						this.startX -
-						this.gestureOldPanX) *
-					this.zoom
-				this.panY +=
-					(this.ongoingTouches[0].y -
-						this.startY -
-						this.gestureOldPanY) *
-					this.zoom
+				this.panX = this.startPanX + panX
+				this.panY = this.startPanY + panY
 				this.gestureOldPanX = this.ongoingTouches[0].x - this.startX
 				this.gestureOldPanY = this.ongoingTouches[0].y - this.startY
 				console.log(e)
@@ -451,6 +466,7 @@ export class PanZoom2D {
 				},
 				onFrame: () => {
 					let updated = false
+
 					if (this.oldZoom !== this.zoom || firstRender) {
 						// Apply the zoom affine transformation matrix
 						const centerX = this.mouseX * dpr
@@ -472,16 +488,23 @@ export class PanZoom2D {
 						isUpdateNeeded = true
 						firstRender = false
 					}
-					const transform = this.zoomT
 					if (
 						this.oldPanX !== this.panX ||
 						this.oldPanY !== this.panY
 					) {
+						const transform = this.zoomT
+
 						// Apply the translation affine transformation matrix
-						const factor = Math.PI / Math.exp(this.zoom)
+						// let factor = 3 / this.zoom / Math.log(this.zoom) // Math.PI / Math.exp(this.zoom)
+						let factor =
+							this.zoom > 5
+								? Math.pow(this.zoom, Math.log(this.zoom)) /
+								  Math.exp(this.zoom)
+								: 1 / Math.log(this.zoom) // Math.PI / Math.exp(this.zoom)
+						console.log(Math.log(this.zoom), Math.exp(this.zoom))
 						const deltaX = (this.panX - this.oldPanX) * factor
 						const deltaY = (this.panY - this.oldPanY) * factor
-						translate(transform, [deltaX, deltaY, 0.0], transform)
+						translate(transform, [deltaX, deltaY, 0], transform)
 						this.oldPanX = this.panX
 						this.oldPanY = this.panY
 						isUpdateNeeded = true
