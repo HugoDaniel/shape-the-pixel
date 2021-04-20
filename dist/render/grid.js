@@ -122,6 +122,7 @@ export class RenderGrid {
 		h,
 		gridFillIds, // Map2D<number>
 	}) {
+		console.log("INITIALIZING WITH GRID IDS", gridFillIds)
 		this.reset(w, h, dpr)
 		this.appendDrawLoop()
 		this.initializeBuffers(gridFillIds)
@@ -376,22 +377,3 @@ export class RenderGrid {
     </use-program>
 `
 }
-
-////////////////////
-// APP STATE MOCK //
-////////////////////
-const appState = new Map2D(
-	[
-		[0, 0],
-		[1, 1],
-		[1, 2],
-		[-1, -1],
-		[2, 2],
-		[5, 2],
-		[5, 0],
-		[10, 2],
-		[31, 2],
-		[0, 29],
-	],
-	[5, 1, 2, 3, 4, 1, 3, 2, 5, 5]
-)

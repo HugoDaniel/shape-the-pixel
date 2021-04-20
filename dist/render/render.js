@@ -33,7 +33,7 @@ export class Render {
 			dpr: window.devicePixelRatio,
 			w: window.innerWidth * window.devicePixelRatio,
 			h: window.innerHeight * window.devicePixelRatio,
-			gridFillIds: new Map2D(),
+			gridFillIds: appState,
 		})
 		this.shaderCanvasElem.initialize()
 		this.shaderCanvasElem.draw()
@@ -52,3 +52,22 @@ export class Render {
 		}
 	}
 }
+
+////////////////////
+// APP STATE MOCK //
+////////////////////
+const appState = new Map2D(
+	[
+		[0, 0],
+		[1, 1],
+		[1, 2],
+		[-1, -1],
+		[2, 2],
+		[5, 2],
+		[5, 0],
+		[10, 2],
+		[31, 2],
+		[0, 29],
+	],
+	[5, 1, 2, 3, 4, 1, 3, 2, 5, 5]
+)
