@@ -313,6 +313,7 @@ export class PanZoom2D {
 				this.ongoingTouches[0].x - this.ongoingTouches[1].x,
 				this.ongoingTouches[0].y - this.ongoingTouches[1].y
 			)
+			this.gestureStartZoom = this.zoom
 			this.debugMsg(
 				`ZOOM START ${this.zoomStartDist} - points: ${this.ongoingTouches.length}`
 			)
@@ -340,13 +341,17 @@ export class PanZoom2D {
 					this.ongoingTouches[0].x - this.ongoingTouches[1].x,
 					this.ongoingTouches[0].y - this.ongoingTouches[1].y
 				)
-				this.zoom = this.zoomCurrentDist / this.zoomStartDist
+				this.zoom =
+					this.gestureStartZoom *
+					(this.zoomCurrentDist / this.zoomStartDist)
 
-				const centerX =
+				this.mouseX =
 					(this.ongoingTouches[0].x + this.ongoingTouches[1].x) / 2
-				const centerY =
+				this.mouseY =
 					(this.ongoingTouches[0].y + this.ongoingTouches[1].y) / 2
-				this.debugMsg(`ZOOM: ${this.zoom}, c(${centerX}, ${centerY}`)
+				this.debugMsg(
+					`ZOOM: ${this.zoom}, c(${this.mouseX}, ${this.mouseY}`
+				)
 			} else {
 				// Pan
 				console.log("PAN")
@@ -499,7 +504,6 @@ export class PanZoom2D {
 	 * calculated if there are no gesture* events available.
 	 **/
 	wheelHandler = e => {
-		console.log("WHEEL")
 		e.stopPropagation()
 		// Zoom can happen when the ctrl key is set
 		if (e.ctrlKey) {
