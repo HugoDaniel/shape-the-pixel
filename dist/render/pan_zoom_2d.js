@@ -313,19 +313,19 @@ export class PanZoom2D {
 				this.ongoingTouches[0].x - this.ongoingTouches[1].x,
 				this.ongoingTouches[0].y - this.ongoingTouches[1].y
 			)
-			this.debugMsg(`ZOOM START ${this.zoomStartDist}`)
+			this.debugMsg(
+				`ZOOM START ${this.zoomStartDist} - points: ${this.ongoingTouches.length}`
+			)
 		}
 	}
 	handlePointerUp = e => {
-		console.log("Pointer up", e)
 		this.handleEnd(e)
 	}
 	handlePointerCancel = e => {
-		console.log("Pointer cancel", e)
 		this.handleEnd(e)
 	}
 	handlePointerMove = e => {
-		console.log("Pointer move", e)
+		console.log("Pointer moves", e)
 		var index = this.ongoingTouchIndexById(e.pointerId)
 		if (index >= 0) {
 			// Found
@@ -338,11 +338,16 @@ export class PanZoom2D {
 					this.ongoingTouches[0].x - this.ongoingTouches[1].x,
 					this.ongoingTouches[0].y - this.ongoingTouches[1].y
 				)
-				this.debugMsg(
-					`ZOOM: ${this.zoomCurrentDist / this.zoomStartDist}, ${
-						this.zoomCurrentDist
-					}, ${this.zoomStartDist}`
-				)
+				this.zoom = this.zoomCurrentDist / this.zoomStartDist
+				const m =
+					(this.ongoingTouches[0].x - this.ongoingTouches[1].x) /
+					(this.ongoingTouches[0].y - this.ongoingTouches[1].y)
+				const centerX =
+					this.ongoingTouches[0].x + 0.5 * this.zoomCurrentDist
+				const centerY =
+					this.ongoingTouches[0].y + 0.5 * this.zoomCurrentDist
+				this.debugMsg(`ZOOM: ${this.zoom}, m:${m}`)
+				// , c(${centerX}, ${centerY})
 			} else {
 				// Pan
 				console.log("PAN")
