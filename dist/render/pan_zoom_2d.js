@@ -346,8 +346,9 @@ export class PanZoom2D {
 					this.ongoingTouches[0].x + 0.5 * this.zoomCurrentDist
 				const centerY =
 					this.ongoingTouches[0].y + 0.5 * this.zoomCurrentDist
-				this.debugMsg(`ZOOM: ${this.zoom}, m:${m}`)
-				// , c(${centerX}, ${centerY})
+				this.debugMsg(
+					`ZOOM: ${this.zoom}, m:${m}, c(${centerX}, ${centerY}`
+				)
 			} else {
 				// Pan
 				console.log("PAN")
