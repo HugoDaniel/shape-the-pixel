@@ -247,10 +247,14 @@ export class PanZoom2D {
 
 		if (true) {
 			// pointer events
-			el.addEventListener("pointerdown", this.handlePointerStart, false);
-			el.addEventListener("pointerup", this.handlePointerUp, false);
-			el.addEventListener("pointercancel", this.handlePointerCancel, false);
-			el.addEventListener("pointermove", this.handlePointerMove, false);
+			el.addEventListener("pointerdown", this.handlePointerStart, false)
+			el.addEventListener("pointerup", this.handlePointerUp, false)
+			el.addEventListener(
+				"pointercancel",
+				this.handlePointerCancel,
+				false
+			)
+			el.addEventListener("pointermove", this.handlePointerMove, false)
 		} else {
 			el.addEventListener("wheel", this.wheelHandler, {
 				passive: false,
@@ -268,64 +272,83 @@ export class PanZoom2D {
 		p.innerText = p.innerText + "DEBUG: "
 		document.body.prepend(p)
 	}
-	debugMsg = (msg) => {
+	debugMsg = msg => {
 		const p = document.getElementById("debug")
 		p.innerText = `Debug: ${msg}`
 	}
 	ongoingTouches = new Array()
 	copyTouch(touch) {
-		return { identifier: touch.pointerId, pageX: touch.clientX, pageY: touch.clientY };
+		return {
+			identifier: touch.pointerId,
+			pageX: touch.clientX,
+			pageY: touch.clientY,
+		}
 	}
-	ongoingTouchIndexById = (idToFind) => {
-		for (var i = 0; i < this.ongoingTouches.length; i++) {
-			var id = this.ongoingTouches[i].identifier;
-		
+	ongoingTouchIndexById = idToFind => {
+		for (let i = 0; i < this.ongoingTouches.length; i++) {
+			var id = this.ongoingTouches[i].identifier
+
 			if (id == idToFind) {
-			return i;
+				return i
 			}
 		}
-		return -1; // not found
+		return -1 // not found
 	}
-	handleEnd = (e) => {
-		var index = this.ongoingTouchIndexById(e.pointerId);
-	  
+	handleEnd = e => {
+		var index = this.ongoingTouchIndexById(e.pointerId)
+
 		if (index >= 0) {
-		  this.ongoingTouches.splice(index, 1);  // remove it; we're done
+			this.ongoingTouches.splice(index, 1) // remove it; we're done
 		} else {
-		  console.log("can't figure out which touch to end");
+			console.log("can't figure out which touch to end")
 		}
-	  }
-	handlePointerStart = (e) => {
-		console.log('Pointer start', e)
+	}
+	zoomStartDist = 0
+	zoomCurrentDist = 0
+	handlePointerStart = e => {
+		console.log("Pointer start", e)
 		this.ongoingTouches.push(this.copyTouch(e))
+		if (this.ongoingTouches.length >= 2) {
+			this.zoomStartDist = Math.hypot(
+				this.ongoingTouches[0].x - this.ongoingTouches[1].x,
+				this.ongoingTouches[0].y - this.ongoingTouches[1].y
+			)
+			this.debugMsg(`ZOOM START ${this.zoomStartDist}`)
+		}
 	}
-	handlePointerUp = (e) => {
-		console.log('Pointer up', e)
+	handlePointerUp = e => {
+		console.log("Pointer up", e)
 		this.handleEnd(e)
 	}
-	handlePointerCancel = (e) => {
-		console.log('Pointer cancel', e)
+	handlePointerCancel = e => {
+		console.log("Pointer cancel", e)
 		this.handleEnd(e)
 	}
-	handlePointerMove = (e) => {
-		console.log('Pointer move', e)
-		var index = this.ongoingTouchIndexById(e.pointerId);
+	handlePointerMove = e => {
+		console.log("Pointer move", e)
+		var index = this.ongoingTouchIndexById(e.pointerId)
 		if (index >= 0) {
 			// Found
 			if (this.ongoingTouches.length > 1) {
 				// Zoom
-				console.log('ZOOM')
-				this.debugMsg('ZOOM')
+				console.log("ZOOM")
+				this.zoomCurrentDist = Math.hypot(
+					this.ongoingTouches[0].x - this.ongoingTouches[1].x,
+					this.ongoingTouches[0].y - this.ongoingTouches[1].y
+				)
+				this.debugMsg(
+					`ZOOM: ${this.zoomCurrentDist / this.zoomStartDist}`
+				)
 			} else {
 				// Pan
-				console.log('PAN')
-				this.debugMsg('PAN')
+				console.log("PAN")
+				this.debugMsg("PAN")
 			}
 		} else {
-			this.debugMsg('NOTHING')
+			this.debugMsg("NOTHING")
 		}
 	}
-	  
+
 	/**
 	 * Removes all event listener functions (if they have been registered).
 	 *
