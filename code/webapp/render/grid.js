@@ -356,12 +356,11 @@ export class RenderGrid {
 	static drawLoopHTML = instanceNumber => `\
     <bind-framebuffer src="elements-grid">
         <draw-buffers buffers=["COLOR_ATTACHMENT0","COLOR_ATTACHMENT1"]></draw-buffers>
+		<clear-color red="0" green="0" blue="0" alpha="1"></clear-color>
+		<clear-flags mask="COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT"></clear-flags>
         <viewport-transform x="0" y="0"></viewport-transform>
         <depth-func func="LEQUAL"></depth-func>
         <use-program src="infinite-grid">
-            <uniform-1fv var="isLines" value="0"></uniform-1fv>
-            <draw-vao instanceCount=${instanceNumber} src="quad-vao" mode="TRIANGLE_FAN" count="4" type="UNSIGNED_SHORT">
-            </draw-vao>
             <uniform-1fv var="isLines" value="1"></uniform-1fv>
             <draw-vao instanceCount=${instanceNumber} src="quad-vao" mode="LINE_STRIP" count="4" type="UNSIGNED_SHORT">
             </draw-vao>
@@ -369,6 +368,9 @@ export class RenderGrid {
         <read-buffer src="COLOR_ATTACHMENT1"></read-buffer>
         <read-pixels dest="position-picker-pack" type="INT" format="RGBA_INTEGER"></read-pixels>
     </bind-framebuffer>
+	<clear-color red="0" green="0" blue="0" alpha="1"></clear-color>
+	<clear-flags mask="COLOR_BUFFER_BIT"></clear-flags>
+
     <depth-func func="LEQUAL"></depth-func>
     <viewport-transform x="0" y="0"></viewport-transform>
     <use-program src="full-screen-quad">
@@ -377,3 +379,11 @@ export class RenderGrid {
     </use-program>
 `
 }
+
+/*
+            <uniform-1fv var="isLines" value="0"></uniform-1fv>
+            <draw-vao instanceCount=${instanceNumber} src="quad-vao" mode="TRIANGLE_FAN" count="4" type="UNSIGNED_SHORT">
+            </draw-vao>
+
+
+*/

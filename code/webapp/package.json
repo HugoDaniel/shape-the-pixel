@@ -1,18 +1,19 @@
 {
-  "name": "shape-the-pixel",
-  "version": "1.0.0",
-  "description": "An innovative drawing app",
-  "main": "shape-the-pixel.js",
-  "author": "Hugo Daniel",
-  "license": "EUPL",
-  "private": false,
-  "dependencies": {
-    "cuid": "^2.1.8",
-    "y-indexeddb": "^9.0.6",
-    "y-webrtc": "^10.1.8",
-    "yjs": "^13.5.5"
-  },
-  "browserslist": [
-    "last 1 Chrome version"
-  ]
+	"name": "shape-the-pixel",
+	"version": "1.0.0",
+	"description": "An innovative drawing app",
+	"main": "shape-the-pixel.js",
+	"author": "Hugo Daniel",
+	"license": "EUPL",
+	"private": false,
+	"dependencies": {
+		"cuid": "^2.1.8",
+		"three": "^0.127.0",
+		"y-indexeddb": "^9.0.6",
+		"y-webrtc": "^10.1.8",
+		"yjs": "^13.5.5"
+	},
+	"browserslist": [
+		"last 1 Chrome version"
+	]
 }
