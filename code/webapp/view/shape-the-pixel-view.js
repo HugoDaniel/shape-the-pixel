@@ -11,14 +11,15 @@ export class View {
 	scene = new THREE.Scene()
 	frustumSize = 1000
 	camera = new THREE.OrthographicCamera(
-		(this.frustumSize * this.aspect) / -2,
-		(this.frustumSize * this.aspect) / 2,
-		this.frustumSize / 2,
-		this.frustumSize / -2,
+		this.width / -2,
+		this.width / 2,
+		this.height / 2,
+		this.height / -2,
 		1,
 		1000
 	)
 	controls = new MapControls(this.camera, this.renderer.domElement)
+	squareGrid = new SquareGrid()
 
 	constructor(container = document.body) {
 		this.renderer.setPixelRatio(window.devicePixelRatio)
@@ -32,12 +33,12 @@ export class View {
 
 		container.appendChild(this.renderer.domElement)
 		window.addEventListener("resize", this.onWindowResize)
-		this.placeItems()
+		this.init()
 		this.render()
 	}
 
-	placeItems() {
-		const geometryBox = this.box(50, 50, 50)
+	init() {
+		const geometryBox = this.box(window.innerWidth, window.innerHeight, 2)
 
 		const lineSegments = new THREE.LineSegments(
 			geometryBox,
@@ -49,6 +50,35 @@ export class View {
 		)
 		lineSegments.computeLineDistances()
 		this.scene.add(lineSegments)
+
+		const geometryPts = this.points(0, 0)
+		const points = new THREE.Points(
+			geometryPts,
+			new THREE.PointsMaterial({ color: 0x888888, size: 10 })
+		)
+		this.scene.add(points)
+
+		this.squareGrid.init(this.scene, this.camera)
+	}
+
+	points(offsetX, offsetY) {
+		const geometry = new THREE.BufferGeometry()
+		const position = []
+
+		position.push(0, 0, -10)
+		position.push(window.innerWidth / 2, 0, -10)
+		position.push(-window.innerWidth / 2, 0, -10)
+		position.push(-window.innerWidth / 2, -window.innerHeight / 2, -10)
+		position.push(window.innerWidth / 2, window.innerHeight / 2, -10)
+		position.push(-window.innerWidth / 2, window.innerHeight / 2, -10)
+		position.push(window.innerWidth / 2, -window.innerHeight / 2, -10)
+		position.push(0, window.innerHeight / 2, -10)
+		position.push(0, -window.innerHeight / 2, -10)
+		geometry.setAttribute(
+			"position",
+			new THREE.BufferAttribute(new Float32Array(position), 3)
+		)
+		return geometry
 	}
 
 	box(width, height, depth) {
@@ -179,14 +209,16 @@ export class View {
 
 	render() {
 		const time = Date.now() * 0.001
-
+		/*
 		this.scene.traverse(function (object) {
 			if (object.isLine) {
 				object.rotation.x = 0.25 * time
 				object.rotation.y = 0.25 * time
 			}
 		})
-
+*/
+		this.squareGrid.update(this.scene, this.camera)
+		// this.squareGrid.render()
 		this.renderer.render(this.scene, this.camera)
 	}
 
