@@ -134,6 +134,9 @@ server.on('upgrade', (request, socket, head) => {
   wss.handleUpgrade(request, socket, head, handleAuth)
 })
 
-server.listen(port)
+server.listen({
+  host: "shape-the-pixel.com",
+  port
+})
 
-console.log('Signaling server running on localhost:', port)
+console.log('Signaling server running on:', port)

@@ -11,7 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "lib0": "^0.2.41",
-    "node": "^16.0.0",
     "ws": "^7.4.5"
   }
 }
