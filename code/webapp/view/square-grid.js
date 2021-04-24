@@ -109,87 +109,9 @@ export class SquareGrid {
 		this.dpr = window.devicePixelRatio
 
 		this.squares = new Squares()
-		/*
-
-		const maxHorizontalLines = this.height / this.minSquareSize
-		const maxVerticalLines = this.width / this.minSquareSize
-		const linesBuffer = new THREE.BufferAttribute(
-			new Float32Array(maxHorizontalLines * maxVerticalLines * 2 * 3),
-			// 2 vertices per line, with 3 coordinates per vertex    ^   ^
-			3
-		)
-		linesBuffer.setUsage(THREE.DynamicDrawUsage)
-		this.linesGeometry.setAttribute("position", linesBuffer)
-		this.hLineGeometry.setAttribute(
-			"position",
-			new THREE.BufferAttribute(hVertices, 3)
-		)
-		this.hLineMesh = new THREE.InstancedMesh(
-			this.hLineGeometry,
-			new THREE.LineDashedMaterial({
-				color: 0xffaa00,
-				dashSize: 3,
-				gapSize: 1,
-			}),
-			this.totalHorizontalLines
-		)
-		this.hLineMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
-		*/
 	}
 
 	init = (scene, camera) => {
-		this.ptsGeometry = new THREE.BufferGeometry()
-		const position = []
-		const z = -1
-
-		addEventListener("click", e => {
-			this.squares.updateViewport(
-				this.width,
-				this.height,
-				this.originAt.x,
-				this.originAt.y,
-				camera.zoom
-			)
-		})
-		addEventListener("keydown", e => {
-			if (e.key === " ") {
-				this.squares.updateViewport(
-					this.width,
-					this.height,
-					this.originAt.x,
-					this.originAt.y,
-					camera.zoom
-				)
-			}
-		})
-		/*
-		position.push(-1265.493198566036, 1396.312871730535, z)
-		position.push(-window.innerWidth / 2, 0, z)
-		position.push(-window.innerWidth / 2, -window.innerHeight / 2, z)
-		position.push(window.innerWidth / 2, window.innerHeight / 2, z)
-		position.push(-window.innerWidth / 2, window.innerHeight / 2, z)
-		position.push(window.innerWidth / 2, -window.innerHeight / 2, z)
-		position.push(0, window.innerHeight / 2, z)
-		position.push(0, -window.innerHeight / 2, z)
-*/
-		this.ptsGeometry.setAttribute(
-			"position",
-			new THREE.BufferAttribute(new Float32Array(position), 3)
-		)
-		this.pts = new THREE.Points(
-			this.ptsGeometry,
-			new THREE.PointsMaterial({ color: 0x0000ee, size: 20 })
-		)
-		scene.add(this.pts)
-		/*
-		this.lines = new THREE.LineSegments(
-			this.linesGeometry,
-			this.linesMaterial
-		)
-*/
-		// this.updateLines(camera)
-		// 		scene.add(this.lines)
-
 		this.updateCameraVectors(camera)
 		this.squares.updateViewport(
 			this.width,
@@ -199,6 +121,32 @@ export class SquareGrid {
 			camera.zoom
 		)
 		scene.add(this.squares.root)
+	}
+
+	viewportSquare(x, y) {
+		const z = this.prevZoom
+		const xAtCenter = x - this.width / 2
+		const xFromOrigin = xAtCenter - this.originAt.x * z
+		const yAtCenter = y - this.height / 2
+		const yFromOrigin = yAtCenter + this.originAt.y * z
+		const screenSquareSize = (this.squareSize * z) / this.dpr
+		const sq = new THREE.Vector2(
+			xFromOrigin / screenSquareSize,
+			-yFromOrigin / screenSquareSize
+		)
+
+		if (sq.x > 0) {
+			sq.x = Math.ceil(sq.x) - 1
+		} else {
+			sq.x = Math.floor(sq.x)
+		}
+		if (sq.y > 0) {
+			sq.y = Math.ceil(sq.y) - 1
+		} else {
+			sq.y = Math.floor(sq.y)
+		}
+
+		return sq
 	}
 
 	updateCameraVectors(camera) {
@@ -212,14 +160,15 @@ export class SquareGrid {
 			1
 		)
 	}
+
 	update(scene, camera) {
 		this.updateCameraVectors(camera)
+		// Only update the grid position if the camera has changed
 		if (
 			this.deltaOriginAt.x !== 0 ||
 			this.deltaOriginAt.y !== 0 ||
 			this.prevZoom !== camera.zoom
 		) {
-			// Camera changed, update the grid positioning
 			this.squares.updateViewport(
 				this.width,
 				this.height,
@@ -227,93 +176,7 @@ export class SquareGrid {
 				this.originAt.y,
 				camera.zoom
 			)
-
 			this.prevZoom = camera.zoom
 		}
-	}
-
-	updatePoints = zoom => {
-		this.pts.translateX(-this.deltaOriginAt.x)
-		this.pts.translateY(-this.deltaOriginAt.y)
-
-		this.ptsGeometry.attributes.position.setXY(
-			0,
-			(this.width / 2) * zoom,
-			0
-		)
-		this.ptsGeometry.attributes.position.setXY(
-			1,
-			(-this.width / 2) * zoom,
-			0
-		)
-		this.ptsGeometry.attributes.position.setXY(
-			2,
-			0,
-			-(this.height / 2) * zoom
-		)
-		this.ptsGeometry.attributes.position.setXY(
-			3,
-			0,
-			(this.height / 2) * zoom
-		)
-		/*
-		this.ptsGeometry.attributes.position.setXY(4, -limits.x, limits.y)
-		this.ptsGeometry.attributes.position.setXY(5, limits.x, -limits.y)
-		this.ptsGeometry.attributes.position.setXY(6, 0, -limits.y)
-		this.ptsGeometry.attributes.position.setXY(7, 0, limits.y)
-		*/
-		this.ptsGeometry.attributes.position.needsUpdate = true
-	}
-
-	updateLines(camera) {
-		const zoom = camera.zoom
-		const showLog = false
-		let limits = new Vector4(
-			this.width / 2 - this.originAt.x,
-			this.height / 2,
-			0,
-			1
-		)
-		// limits.applyMatrix4(camera.matrixWorldInverse)
-		if (showLog)
-			console.log(
-				"ORIGIN AT",
-				this.originAt.x * zoom,
-				this.originAt.y * zoom,
-				limits.x,
-				limits.y,
-				zoom
-			)
-		this.updatePoints(1 / zoom)
-		const size = this.squareSize
-		const buffer = this.lines.geometry.attributes.position
-		// Draw horizontal lines
-		buffer.needsUpdate = true
-		const invZoom = 1 / zoom
-
-		/*
-		const zoomedSize = this.squareSize
-		const totalHorizontalLines = this.height / zoomedSize
-		const totalVerticalLines = this.width / zoomedSize
-		this.linesGeometry.setDrawRange(0, totalHorizontalLines * 3)
-		const startY =
-			this.height / 2 +
-			zoomedSize -
-			(this.originAt.y % zoomedSize) -
-			zoomedSize
-		const startX = (0 / zoomedSize) % zoomedSize
-		const horizontalLimit = this.width / 2 / zoom
-		for (let i = 0; i < totalHorizontalLines; i++) {
-			buffer.array[i * 2 * 3 + 0] = -horizontalLimit
-			buffer.array[i * 2 * 3 + 1] = startY - i * zoomedSize
-			buffer.array[i * 2 * 3 + 2] = -1
-
-			buffer.array[i * 2 * 3 + 3] = horizontalLimit
-			buffer.array[i * 2 * 3 + 4] = startY - i * zoomedSize
-			buffer.array[i * 2 * 3 + 5] = -1
-		}
-		this.lines.translateX(-this.deltaOriginAt.x)
-		this.lines.translateY(-this.deltaOriginAt.y)
-		*/
 	}
 }

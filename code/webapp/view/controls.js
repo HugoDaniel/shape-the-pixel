@@ -550,7 +550,6 @@ var OrbitControls = function (object, domElement) {
 			const zoomPosY = event.clientY - window.innerHeight / 2
 			pan(-zoomPosX, -zoomPosY)
 			if (event.deltaY < 0) {
-				// updateTargetTo(event.clientX, event.clientY)
 				dollyIn(getZoomScale())
 			} else {
 				dollyOut(getZoomScale())

@@ -9,7 +9,6 @@ export class View {
 	aspect = this.width / this.height
 	renderer = new THREE.WebGLRenderer({ antialias: true })
 	scene = new THREE.Scene()
-	frustumSize = 1000
 	camera = new THREE.OrthographicCamera(
 		this.width / -2,
 		this.width / 2,
@@ -28,11 +27,12 @@ export class View {
 		this.scene.background = new THREE.Color(0xfafaf3)
 
 		this.controls.rotateSpeed = 1.0
-		this.controls.zoomSpeed = this.isMobile ? 1.0 : 0.2
+		this.controls.zoomSpeed = this.isMobile ? 0.8 : 0.6
 		// this.controls.panSpeed = 1.0
 
 		container.appendChild(this.renderer.domElement)
 		window.addEventListener("resize", this.onWindowResize)
+		window.addEventListener("pointermove", this.onPointerMove)
 		this.init()
 		this.render()
 	}
@@ -192,15 +192,19 @@ export class View {
 			return false
 		}
 	}
+
+	onPointerMove = e => {
+		this.squareGrid.viewportSquare(e.clientX, e.clientY)
+	}
 	onWindowResize = () => {
 		this.width = window.innerWidth
 		this.height = window.innerHeight
 		this.aspect = this.width / this.height
 
-		this.camera.left = (-this.frustumSize * this.aspect) / 2
-		this.camera.right = (this.frustumSize * this.aspect) / 2
-		this.camera.top = this.frustumSize / 2
-		this.camera.bottom = -this.frustumSize / 2
+		this.camera.left = this.width / -2
+		this.camera.right = this.width / 2
+		this.camera.top = this.height / 2
+		this.camera.bottom = this.height / -2
 
 		this.camera.updateProjectionMatrix()
 
