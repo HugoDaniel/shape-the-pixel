@@ -1,6 +1,6 @@
 // Copyright © 2021 by Hugo Daniel Henriques Oliveira Gomes. All rights reserved.
 // Licensed under the EUPL v1.2
-const { Y, cuid } = External
+const { Y, WebrtcProvider, cuid } = External
 
 /**
  * Model holds all the documents available and keeps track of the list of
@@ -15,7 +15,7 @@ export class Model {
 	 * The current document id - useful to keep track of it in indexedDB and
 	 * WebRTC sessions. In the browser this document id is set in the url hash.
 	 */
-	id = cuid()
+	id
 	/**
 	 * The document being worked on, this is where all the actions are going
 	 * to be applied to.
@@ -23,10 +23,19 @@ export class Model {
 	doc = new Y.Doc()
 	actions = this.doc.getArray("actions")
 
-	constructor() {
-		const ydoc = new Y.Doc()
-
+	constructor(id) {
+		if (!id) {
+			this.id = cuid()
+		} else {
+			this.id = id
+		}
+		this.provider = new WebrtcProvider(this.id, this.doc, {
+			maxConns: 5 + Math.floor(Math.random() * 10),
+			signaling: ["ws://78.46.83.59:4444"],
+		})
+		/*
 		// You can define a Y.Array as a top-level type or a nested type
+		const ydoc = new Y.Doc()
 
 		// Method 1: Define a top-level type
 		const yarray = ydoc.getArray("my array type")
@@ -61,5 +70,6 @@ export class Model {
 		yarray.push([cuid()])
 		yarray.insert(4, ["yes", "men"])
 		console.log(yarray.toArray()) // => [1, 'a']
+		*/
 	}
 }

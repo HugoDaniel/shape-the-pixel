@@ -4,7 +4,6 @@ import { Model } from "./model.js"
 
 const { IndexeddbPersistence } = External
 export class ViewState {
-	model = new Model()
 	/**
 	 * The IndexedDBProvider is used to keep a local copy of the current model
 	 * document. It is only active at runtime during actual browser usage. This
@@ -16,8 +15,9 @@ export class ViewState {
 	get docId() {
 		return this.model.id
 	}
-	constructor(bounds) {
+	constructor(bounds, roomId) {
 		this.bounds = bounds
+		this.model = new Model(roomId)
 	}
 
 	/**
